@@ -57,7 +57,7 @@ public class DealerDeal implements Dealer {
 
 
     @Override
-    public PokerResult decideWinner(Board board) {
+    public PokerResult decideWinner(Board board) throws InvalidPokerBoardException {
         PokerValidator.printValidationMessageIfNeeded();
         PokerValidator.validateBoard(board);
 
