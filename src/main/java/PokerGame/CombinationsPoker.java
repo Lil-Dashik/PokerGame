@@ -381,7 +381,7 @@ public class CombinationsPoker {
         for (int i = 0; i < sortedCards.size(); i++) {
             if (straight.isEmpty() || sortedCards.get(i).getRankValue() == straight.get(straight.size() - 1).getRankValue() + 1) {
                 straight.add(sortedCards.get(i));
-                if (straight.size() == 5) {
+                 if (straight.size() == 5) {
                     return straight;
                 }
             } else if (sortedCards.get(i).getRankValue() != straight.get(straight.size() - 1).getRankValue()) {
@@ -400,5 +400,4 @@ public class CombinationsPoker {
         return Collections.emptyList();
     }
 }
-
 

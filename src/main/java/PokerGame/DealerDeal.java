@@ -80,17 +80,7 @@ public class DealerDeal implements Dealer {
             return PokerResult.DRAW;
         }
     }
-    public Board analyzeExistingBoard(Board board) {
-        PokerValidator.validateBoard(board); // Проверяем доску
-        return board;
-    }
 
-    // Метод для создания новой доски на основе данных
-    public Board createCustomBoard(String playerOne, String playerTwo, String flop, String turn, String river) {
-        Board customBoard = new Board(playerOne, playerTwo, flop, turn, river);
-        PokerValidator.validateBoard(customBoard); // Проверяем корректность
-        return customBoard;
-    }
 
     // Вспомогательный метод для парсинга строковых карт в объекты Card
 
