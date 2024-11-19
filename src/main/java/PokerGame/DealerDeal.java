@@ -15,8 +15,8 @@ public class DealerDeal implements Dealer {
         if (deck.size() < 4) {
             throw new IllegalStateException("Not enough cards to deal to players.");
         }
-        String playerOne = deck.dealCard().toString() + " " + deck.dealCard().toString();
-        String playerTwo = deck.dealCard().toString() + " " + deck.dealCard().toString();
+        String playerOne = deck.dealCard().toString() + deck.dealCard().toString();
+        String playerTwo = deck.dealCard().toString() + deck.dealCard().toString();
         Board newBoard = new Board(playerOne, playerTwo);
         PokerValidator.validateBoard(newBoard); // Проверка корректности
         return newBoard;
@@ -27,7 +27,7 @@ public class DealerDeal implements Dealer {
         if (deck.size() < 3) {
             throw new IllegalStateException("Not enough cards to deal the flop.");
         }
-        String flop = deck.dealCard().toString() + " " + deck.dealCard().toString() + " " + deck.dealCard().toString();
+        String flop = deck.dealCard().toString() + deck.dealCard().toString() + deck.dealCard().toString();
         Board newBoard = new Board(board.getPlayerOne(), board.getPlayerTwo(), flop);
         PokerValidator.validateBoard(newBoard); // Проверка корректности
         return newBoard;
@@ -59,19 +59,27 @@ public class DealerDeal implements Dealer {
     @Override
     public PokerResult decideWinner(Board board) {
         PokerValidator.printValidationMessageIfNeeded();
+        PokerValidator.validateBoard(board);
+
         List<Card> playerOneCards = parseCards(board.getPlayerOne());
         List<Card> playerTwoCards = parseCards(board.getPlayerTwo());
+        List<Card> communityCards = getCommunityCards(board);
 
-        List<Card> communityCards = parseCards(board.getFlop());
-        if (board.getTurn() != null) communityCards.addAll(parseCards(board.getTurn()));
-        if (board.getRiver() != null) communityCards.addAll(parseCards(board.getRiver()));
 
         // Находим лучшую комбинацию для каждого игрока
         HandPlayer playerOneBestHand = PokerHandEvaluator.evaluateBestHand(playerOneCards, communityCards);
         HandPlayer playerTwoBestHand = PokerHandEvaluator.evaluateBestHand(playerTwoCards, communityCards);
 
-        // Определяем победителя
+        printBestHands(playerOneBestHand, playerTwoBestHand);
+        PokerResult result = determineWinner(playerOneBestHand, playerTwoBestHand);
+        printResult(result);
+        PokerValidator.validateBoard(board);
+        return result;
+    }
+
+    private PokerResult determineWinner(HandPlayer playerOneBestHand, HandPlayer playerTwoBestHand) {
         int comparisonResult = playerOneBestHand.compareTo(playerTwoBestHand);
+
         if (comparisonResult > 0) {
             return PokerResult.PLAYER_ONE_WIN;
         } else if (comparisonResult < 0) {
@@ -81,14 +89,33 @@ public class DealerDeal implements Dealer {
         }
     }
 
+    private void printResult(PokerResult result) {
 
-    // Вспомогательный метод для парсинга строковых карт в объекты Card
+        switch (result) {
+            case PLAYER_ONE_WIN -> System.out.println("Final Result: PLAYER_ONE_WIN");
+            case PLAYER_TWO_WIN -> System.out.println("Final Result: PLAYER_TWO_WIN");
+            case DRAW -> System.out.println("Final Result: DRAW");
+        }
+
+    }
+
+    private List<Card> getCommunityCards(Board board) {
+        List<Card> communityCards = parseCards(board.getFlop());
+        if (board.getTurn() != null) communityCards.addAll(parseCards(board.getTurn()));
+        if (board.getRiver() != null) communityCards.addAll(parseCards(board.getRiver()));
+        return communityCards;
+    }
+
+    private void printBestHands(HandPlayer playerOneBestHand, HandPlayer playerTwoBestHand) {
+        System.out.println("Player One Best Combination: " + playerOneBestHand.getPriority() + " with cards: " + playerOneBestHand.getCards());
+        System.out.println("Player Two Best Combination: " + playerTwoBestHand.getPriority() + " with cards: " + playerTwoBestHand.getCards());
+    }
 
     public List<Card> parseCards(String cardsStr) {
         List<Card> cards = new ArrayList<>();
-        String[] cardTokens = cardsStr.split(" ");
-        for (String token : cardTokens) {
-            cards.add(Card.fromString(token));
+        for (int i = 0; i < cardsStr.length(); i += 2) {
+            String cardStr = cardsStr.substring(i, i + 2);
+            cards.add(Card.fromString(cardStr));
         }
         return cards;
     }

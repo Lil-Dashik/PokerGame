@@ -37,7 +37,7 @@ public class Deck {
     public String toString() {
         return cards.stream()
                 .map(Card::toString)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.joining( " "));
     }
 
     public int size() {
