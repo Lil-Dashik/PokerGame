@@ -30,7 +30,9 @@ public class Deck {
 
             throw new IllegalStateException("Deck is empty");
         }
-        return cards.removeLast();
+        Card dealtCard = cards.removeLast();
+        cards.addFirst(dealtCard);
+        return dealtCard;
     }
 
     @Override

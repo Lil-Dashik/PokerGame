@@ -3,7 +3,7 @@ package PokerGame;
 
 public class PokerGame {
     public static void main(String[] args) {
-        DealerDeal dealer = new DealerDeal(new Deck());
+        DealerDeal dealer = new DealerDeal();
         try {
             Board board = dealer.dealCardsToPlayers();
 

@@ -5,9 +5,8 @@ import java.util.List;
 
 public class DealerDeal implements Dealer {
     private final Deck deck;
-
-    public DealerDeal(Deck deck) {
-        this.deck = deck;
+    public DealerDeal() {
+        this.deck = new Deck();
     }
 
     @Override
