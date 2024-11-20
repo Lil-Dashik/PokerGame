@@ -24,13 +24,19 @@ public class Card {
     }
 
     public static Card fromString(String cardStr) {
-        if (cardStr.length() < 2 || cardStr.length() > 3 ) {
+        if (cardStr.length() < 2 || cardStr.length() > 3) {
             throw new IllegalArgumentException("Invalid card format");
         }
 
-        String rankSymbol = cardStr.substring(0, cardStr.length() - 1);
-        String suitSymbol = cardStr.substring(cardStr.length() - 1);
-
+        String rankSymbol;
+        String suitSymbol;
+        if (cardStr.length() == 3) {
+            rankSymbol = cardStr.substring(0, 2);
+            suitSymbol = cardStr.substring(2, 3);
+        } else {
+            rankSymbol = cardStr.substring(0, 1);
+            suitSymbol = cardStr.substring(1, 2);
+        }
         Rank rank = Rank.fromSymbol(rankSymbol);
         Suit suit = Suit.fromSymbol(suitSymbol);
 

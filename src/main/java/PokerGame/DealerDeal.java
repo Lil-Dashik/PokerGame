@@ -113,11 +113,19 @@ public class DealerDeal implements Dealer {
 
     public List<Card> parseCards(String cardsStr) {
         List<Card> cards = new ArrayList<>();
-        for (int i = 0; i < cardsStr.length(); i += 2) {
+        int i = 0;
+        while (i < cardsStr.length()) {
+            if (i + 2 < cardsStr.length() && cardsStr.substring(i, i + 2).equals("10")) {
+            String cardStr = cardsStr.substring(i, i + 3);
+            cards.add(Card.fromString(cardStr));
+            i += 3;
+        } else{
             String cardStr = cardsStr.substring(i, i + 2);
             cards.add(Card.fromString(cardStr));
+            i += 2;
         }
-        return cards;
+    }
+    return cards;
     }
 }
 
