@@ -25,7 +25,7 @@ public class Card {
 
     public static Card fromString(String cardStr) {
         if (cardStr.length() < 2 || cardStr.length() > 3) {
-            throw new IllegalArgumentException("Invalid card format");
+            throw new IllegalArgumentException("Invalid card format" + cardStr);
         }
 
         String rankSymbol;

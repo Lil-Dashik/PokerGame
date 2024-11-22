@@ -1,139 +1,213 @@
 package PokerGame;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-class CombinationsPokerTest {
-    @Test
-    void testRoyalFlush() {
-        List<Card> cards = List.of(
-                new Card(Rank.TEN, Suit.H),
-                new Card(Rank.JACK, Suit.H),
-                new Card(Rank.QUEEN, Suit.H),
-                new Card(Rank.KING, Suit.H),
-                new Card(Rank.ACE, Suit.H)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.ROYAL_FLUSH, hand.getPriority());
-    }
+import static org.junit.jupiter.api.Assertions.assertEquals;
+//Черви (Hearts)
+//
+//Красные масти, символизирующие сердце.
+//Бубны (Diamonds)
+//
+//Красные масти, представляющие форму ромба.
+//Трефы (Clubs)
+//
+//Черные масти, напоминающие клеверный лист.
+//Пики (Spades)
+//
+//Черные масти, напоминающие форму наконечника копья.
+public class CombinationsPokerTest {
+    private Dealer dealer;
 
-    @Test
-    void testStraightFlush() {
-        List<Card> cards = List.of(
-                new Card(Rank.NINE, Suit.S),
-                new Card(Rank.TEN, Suit.S),
-                new Card(Rank.JACK, Suit.S),
-                new Card(Rank.QUEEN, Suit.S),
-                new Card(Rank.KING, Suit.S)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.STRAIGHT_FLUSH, hand.getPriority());
+    @BeforeEach
+    public void setUp() {
+        dealer = new DealerDeal(); // Инициализируем объект Dealer
     }
-
     @Test
-    void testFourOfAKind() {
-        List<Card> cards = List.of(
-                new Card(Rank.NINE, Suit.S),
-                new Card(Rank.NINE, Suit.H),
-                new Card(Rank.NINE, Suit.D),
-                new Card(Rank.NINE, Suit.C),
-                new Card(Rank.KING, Suit.S)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.FOUR_OF_A_KIND, hand.getPriority());
-    }
-
-    @Test
-    void testFullHouse() {
-        List<Card> cards = List.of(
-                new Card(Rank.THREE, Suit.S),
-                new Card(Rank.THREE, Suit.H),
-                new Card(Rank.THREE, Suit.D),
-                new Card(Rank.KING, Suit.S),
+    public void testEvaluateBestHand() {
+        List<Card> playerCards = Arrays.asList(
+                new Card(Rank.ACE, Suit.H),
                 new Card(Rank.KING, Suit.H)
         );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.FULL_HOUSE, hand.getPriority());
-    }
-
-    @Test
-    void testFlush() {
-        List<Card> cards = List.of(
-                new Card(Rank.TWO, Suit.D),
-                new Card(Rank.FIVE, Suit.D),
-                new Card(Rank.NINE, Suit.D),
-                new Card(Rank.JACK, Suit.D),
-                new Card(Rank.KING, Suit.D)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.FLUSH, hand.getPriority());
-    }
-
-    @Test
-    void testStraight() {
-        List<Card> cards = List.of(
-                new Card(Rank.FIVE, Suit.H),
-                new Card(Rank.SIX, Suit.S),
-                new Card(Rank.SEVEN, Suit.D),
-                new Card(Rank.EIGHT, Suit.C),
-                new Card(Rank.NINE, Suit.H)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.STRAIGHT, hand.getPriority());
-    }
-
-    @Test
-    void testThreeOfAKind() {
-        List<Card> cards = List.of(
-                new Card(Rank.QUEEN, Suit.S),
+        List<Card> communityCards = Arrays.asList(
                 new Card(Rank.QUEEN, Suit.H),
-                new Card(Rank.QUEEN, Suit.D),
-                new Card(Rank.SEVEN, Suit.S),
-                new Card(Rank.TWO, Suit.H)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.THREE_OF_A_KIND, hand.getPriority());
-    }
-
-    @Test
-    void testTwoPair() {
-        List<Card> cards = List.of(
-                new Card(Rank.JACK, Suit.S),
                 new Card(Rank.JACK, Suit.H),
-                new Card(Rank.FOUR, Suit.D),
-                new Card(Rank.FOUR, Suit.S),
-                new Card(Rank.TWO, Suit.H)
+                new Card(Rank.TEN, Suit.H),
+                new Card(Rank.TWO, Suit.C),
+                new Card(Rank.THREE, Suit.S)
         );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.TWO_PAIR, hand.getPriority());
-    }
 
-    @Test
-    void testOnePair() {
-        List<Card> cards = List.of(
-                new Card(Rank.EIGHT, Suit.S),
-                new Card(Rank.EIGHT, Suit.H),
-                new Card(Rank.FIVE, Suit.D),
-                new Card(Rank.THREE, Suit.S),
-                new Card(Rank.TWO, Suit.C)
-        );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.ONE_PAIR, hand.getPriority());
+        HandPlayer bestHand = PokerHandEvaluator.evaluateBestHand(playerCards, communityCards);
+        System.out.println("Best hand: " + bestHand);
+        assertEquals(Priority.ROYAL_FLUSH, bestHand.getPriority());
     }
-
     @Test
-    void testHighCard() {
-        List<Card> cards = Arrays.asList(
-                new Card(Rank.ACE, Suit.C),
-                new Card(Rank.KING, Suit.D),
-                new Card(Rank.NINE, Suit.S),
-                new Card(Rank.FIVE, Suit.H),
-                new Card(Rank.THREE, Suit.C)
+    public void testHighCard() {
+        Board board = new Board(
+                "AH5D", // Player One
+                "QS8C", // Player Two
+                "AC7CKH", // Flop
+                "2S", // Turn
+                "QC" // River
         );
-        HandPlayer hand = CombinationsPoker.evaluateCombination(cards);
-        assertEquals(Priority.HIGH_CARD, hand.getPriority());
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с AHKH
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testOnePair() {
+        Board board = new Board(
+                "AD5H", // Player One
+                "QS8C", // Player Two
+                "AC7CKH", // Flop
+                "2S", // Turn
+                "QC" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        System.out.println("Result: " + result);// Побеждает игрок с старшей кикер-картой AC
+    }
+    //Черви (Hearts)
+    //Бубны (Diamonds)
+    //Трефы (Clubs)
+    //Пики (Spades)
+    @Test
+    public void testTwoPair() {
+        Board board = new Board(
+                "7D6D", // Player One
+                "6H5H", // Player Two
+                "7C5C4S", // Flop
+                "6S", // Turn
+                "KH" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с KHQH
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testThreeOfAKind() {
+        Board board = new Board(
+                "AHAC", // Player One
+                "QSQD", // Player Two
+                "QH8CAS", // Flop
+                "KD", // Turn
+                "4C" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с 3S3C и старшей кикер-картой KH
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testStraight() {
+        Board board = new Board(
+                "9SJS", // Player One
+                "9C10D", // Player Two
+                "5S6H7C", // Flop
+                "8D", // Turn
+                "10S" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с старшей картой Straight 7C
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testFlush() {
+        Board board = new Board(
+                "AD3D", // Player One
+                "KDJD", // Player Two
+                "2H6D7D", // Flop
+                "AC", // Turn
+                "QD" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с Flush AH10H
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testFullHouse() {
+        Board board = new Board(
+                "8C9H", // Player One
+                "6C6S", // Player Two
+                "2C2D2S", // Flop
+                "QS", // Turn
+                "JD" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с старшей парой 6C6H
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testFourOfAKind() {
+        Board board = new Board(
+                "8C8H", // Player One
+                "QDQC", // Player Two
+                "8DQH4C", // Flop
+                "9H", // Turn
+                "8S" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с кикером AS
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testStraightFlush() {
+        Board board = new Board(
+                "JC10C", // Player One
+                "6C5C", // Player Two
+                "3C7C8C", // Flop
+                "9C", // Turn
+                "AC" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с старшей картой 8H9H
+    }
+    //Черви (Hearts) красные
+    //Бубны (Diamonds) голубые
+    //Трефы (Clubs) зелёные
+    //Пики (Spades) чёрные
+    @Test
+    public void testRoyalFlush() {
+        Board board = new Board(
+                "AH4H", // Player One
+                "2H9H", // Player Two
+                "5H10HQH", // Flop
+                "KH", // Turn
+                "JH" // River
+        );
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.PLAYER_ONE_WIN, result); // Побеждает игрок с AHKH
     }
 }
 

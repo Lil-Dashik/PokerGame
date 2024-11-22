@@ -10,47 +10,65 @@ public class CombinationsPoker {
 
     public static HandPlayer evaluateCombination(List<Card> cards) {
         validateCards(cards);
-        String key = generateCacheKey(cards);
-        if (combinationCache.containsKey(key)) {
-            return combinationCache.get(key);
-        }
+
         List<Card> sortedCards = cards.stream()
                 .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
                 .toList();
 
-
-        HandPlayer bestCombination;
-
-        // Проверяем комбинации последовательно по приоритету
         if (RoyalFlush(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.ROYAL_FLUSH, getRoyalFlushCards(sortedCards));
-        } else if (StraightFlush(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.STRAIGHT_FLUSH, getStraightFlushCards(sortedCards));
-        } else if (FourOfAKind(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.FOUR_OF_A_KIND, getFourOfAKindCards(sortedCards));
-        } else if (FullHouse(sortedCards)) {
+            return new HandPlayer(Priority.ROYAL_FLUSH, getRoyalFlushCards(sortedCards));
+        }
+        if (StraightFlush(sortedCards)) {
+            List<Card> straightFlushCards = getStraightFlushCards(sortedCards);
+            if (!straightFlushCards.isEmpty()) {
+                return new HandPlayer(Priority.STRAIGHT_FLUSH, straightFlushCards);
+            }
+        }
+        if (FourOfAKind(sortedCards)) {
+            List<Card> fourOfAKindCards = getFourOfAKindCards(sortedCards);
+            if (!fourOfAKindCards.isEmpty()) {
+                return new HandPlayer(Priority.FOUR_OF_A_KIND, fourOfAKindCards);
+            }
+        }
+        if (FullHouse(sortedCards)) {
             List<Card> fullHouseCards = getFullHouseCards(sortedCards);
-            bestCombination = !fullHouseCards.isEmpty()
-                    ? new HandPlayer(Priority.FULL_HOUSE, fullHouseCards)
-                    : null;
-        } else if (Flush(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.FLUSH, getFlushCards(sortedCards));
-        } else if (Straight(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.STRAIGHT, getStraightCards(sortedCards));
-        } else if (ThreeOfAKind(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.THREE_OF_A_KIND, getThreeOfAKindCards(sortedCards));
-        } else if (TwoPair(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.TWO_PAIR, getTwoPairCards(sortedCards));
-        } else if (OnePair(sortedCards)) {
-            bestCombination = new HandPlayer(Priority.ONE_PAIR, getOnePairCards(sortedCards));
-        } else {
-            bestCombination = new HandPlayer(Priority.HIGH_CARD, getHighCard(sortedCards));
+            if (!fullHouseCards.isEmpty()) {
+                return new HandPlayer(Priority.FULL_HOUSE, fullHouseCards);
+            }
+        }
+        if (Flush(sortedCards)) {
+            List<Card> flushCards = getFlushCards(sortedCards);
+            if (!flushCards.isEmpty()) {
+                return new HandPlayer(Priority.FLUSH, flushCards);
+            }
+        }
+        if (Straight(sortedCards)) {
+            List<Card> straightCards = getStraightCards(sortedCards);
+            if (!straightCards.isEmpty()) {
+                return new HandPlayer(Priority.STRAIGHT, straightCards);
+            }
+        }
+        if (ThreeOfAKind(sortedCards)) {
+            List<Card> threeOfAKindCards = getThreeOfAKindCards(sortedCards);
+            if (!threeOfAKindCards.isEmpty()) {
+                return new HandPlayer(Priority.THREE_OF_A_KIND, threeOfAKindCards);
+            }
+        }
+        if (TwoPair(sortedCards)) {
+            List<Card> twoPairCards = getTwoPairCards(sortedCards);
+            if (!twoPairCards.isEmpty()) {
+                return new HandPlayer(Priority.TWO_PAIR, twoPairCards);
+            }
+        }
+        if (OnePair(sortedCards)) {
+            List<Card> onePairCards = getOnePairCards(sortedCards);
+            if (!onePairCards.isEmpty()) {
+                return new HandPlayer(Priority.ONE_PAIR, onePairCards);
+            }
         }
 
-        // Сохраняем результат в кэш
-        combinationCache.put(key, bestCombination);
-
-        return bestCombination;
+        // Если ни одна комбинация не подошла, возвращаем старшую карту
+        return new HandPlayer(Priority.HIGH_CARD, getHighCard(sortedCards));
     }
 
     private static void validateCards(List<Card> cards) {
@@ -133,16 +151,18 @@ public class CombinationsPoker {
     }
 
     private static List<Card> getStraightFlushCards(List<Card> cards) {
+
         Map<Suit, List<Card>> suitGroups = cards.stream()
                 .collect(Collectors.groupingBy(Card::getSuit));
 
         for (List<Card> suitedCards : suitGroups.values()) {
             if (suitedCards.size() >= 5) {
                 List<Card> sortedSuitedCards = suitedCards.stream()
-                        .sorted(Comparator.comparingInt(Card::getRankValue))
-                        .collect(Collectors.toList());
+                        .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
+                        .toList();
+
                 List<Card> straightFlush = findStraightSequence(sortedSuitedCards);
-                if (straightFlush.size() == 5) {
+                if (!straightFlush.isEmpty()) {
                     return straightFlush;
                 }
             }
@@ -210,8 +230,8 @@ public class CombinationsPoker {
 
     private static boolean Straight(List<Card> cards) {
         List<Card> sortedCards = cards.stream()
-                .distinct()
                 .sorted(Comparator.comparingInt(Card::getRankValue))
+                .distinct() // Убираем дубли
                 .toList();
 
         int consecutiveCount = 1;
@@ -222,36 +242,30 @@ public class CombinationsPoker {
                     return true;
                 }
             } else {
-                consecutiveCount = 1;
+                consecutiveCount = 1; // Сброс счетчика, если последовательность прерывается
             }
         }
 
-        // Проверка на A-2-3-4-5 (low straight)
-        return sortedCards.size() >= 5 &&
+        // Проверка на низкий стрит (A-2-3-4-5)
+        if (sortedCards.size() >= 5 &&
                 sortedCards.get(0).getRankValue() == 2 &&
-                sortedCards.get(sortedCards.size() - 1).getRankValue() == 14;
+                sortedCards.get(sortedCards.size() - 1).getRankValue() == 14) {
+            return true;
+        }
+        return false;
     }
 
     private static List<Card> getStraightCards(List<Card> cards) {
         List<Card> sortedCards = cards.stream()
-                .distinct()
                 .sorted(Comparator.comparingInt(Card::getRankValue))
-                .collect(Collectors.toList());
+                .distinct()
+                .toList();
 
         List<Card> straight = findStraightSequence(sortedCards);
-        if (straight.size() == 5) {
-            return straight;
+        if (!straight.isEmpty()) {
+        } else {
         }
-
-        if (sortedCards.size() >= 5 &&
-                sortedCards.get(0).getRankValue() == 2 &&
-                sortedCards.get(sortedCards.size() - 1).getRankValue() == 14) {
-            return sortedCards.stream()
-                    .filter(card -> card.getRankValue() == 14 || card.getRankValue() <= 5)
-                    .sorted(Comparator.comparingInt(Card::getRankValue))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return straight;
     }
 
     private static boolean FourOfAKind(List<Card> cards) {
@@ -343,30 +357,30 @@ public class CombinationsPoker {
     }
 
     private static boolean OnePair(List<Card> cards) {
+        // Группируем карты по рангу и проверяем наличие хотя бы одной группы с двумя одинаковыми картами
         return cards.stream()
-                .collect(Collectors.groupingBy(Card::getRankValue))
+                .collect(Collectors.groupingBy(Card::getRankValue, Collectors.counting()))
                 .values().stream()
-                .anyMatch(group -> group.size() == 2);
+                .anyMatch(count -> count == 2);
     }
+        private static List<Card> getOnePairCards (List < Card > cards) {
+            Map<Integer, List<Card>> rankGroups = cards.stream()
+                    .collect(Collectors.groupingBy(Card::getRankValue));
 
-    private static List<Card> getOnePairCards(List<Card> cards) {
-        Map<Integer, List<Card>> rankGroups = cards.stream()
-                .collect(Collectors.groupingBy(Card::getRankValue));
-
-        for (Map.Entry<Integer, List<Card>> entry : rankGroups.entrySet()) {
-            if (entry.getValue().size() == 2) {
-                List<Card> onePair = new ArrayList<>(entry.getValue());
-                List<Card> kickers = cards.stream()
-                        .filter(card -> card.getRankValue() != entry.getKey())
-                        .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
-                        .limit(3)
-                        .toList();
-                onePair.addAll(kickers);
-                return onePair;
+            for (Map.Entry<Integer, List<Card>> entry : rankGroups.entrySet()) {
+                if (entry.getValue().size() == 2) {
+                    List<Card> onePair = new ArrayList<>(entry.getValue());
+                    List<Card> kickers = cards.stream()
+                            .filter(card -> card.getRankValue() != entry.getKey())
+                            .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
+                            .limit(3)
+                            .toList();
+                    onePair.addAll(kickers);
+                    return onePair;
+                }
             }
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
-    }
 
     private static List<Card> getHighCard(List<Card> cards) {
         return cards.stream()
@@ -381,7 +395,7 @@ public class CombinationsPoker {
         for (int i = 0; i < sortedCards.size(); i++) {
             if (straight.isEmpty() || sortedCards.get(i).getRankValue() == straight.get(straight.size() - 1).getRankValue() + 1) {
                 straight.add(sortedCards.get(i));
-                 if (straight.size() == 5) {
+                if (straight.size() == 5) {
                     return straight;
                 }
             } else if (sortedCards.get(i).getRankValue() != straight.get(straight.size() - 1).getRankValue()) {
@@ -400,4 +414,5 @@ public class CombinationsPoker {
         return Collections.emptyList();
     }
 }
+
 
