@@ -8,63 +8,48 @@ import java.util.stream.Collectors;
 
 public class PokerHandEvaluator {
     public static HandPlayer evaluateBestHand(List<Card> playerCards, List<Card> communityCards) {
-        List<List<Card>> validCombinations = generateValidCombinations(playerCards, communityCards);
 
-        if (validCombinations.isEmpty()) {
-            return getHighCardHand(playerCards, communityCards);
-        }
+
+        // Генерация всех валидных комбинаций (включающих хотя бы одну карту игрока)
+        List<List<Card>> validCombinations = generateValidCombinations(playerCards, communityCards);
 
         HandPlayer bestHand = null;
         for (List<Card> combination : validCombinations) {
-
-
             HandPlayer evaluatedHand = CombinationsPoker.evaluateCombination(combination);
-
-            if (evaluatedHand.getPriority() == null || evaluatedHand.getCards().isEmpty()) {
-                continue;
-            }
-
-            if (bestHand == null || evaluatedHand.compareTo(bestHand) > 0) {
-                bestHand = evaluatedHand;
-            }
-        }
-        if (bestHand == null) {
-            return getHighCardHand(playerCards, communityCards);
-        }
-        return bestHand;
-        }
-
-    private static HandPlayer getHighCardHand(List<Card> playerCards, List<Card> communityCards) {
-        List<Card> allCards = new ArrayList<>(communityCards);
-        allCards.addAll(playerCards);
-
-        List<Card> sortedCards = allCards.stream()
-                .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
-                .limit(5)
-                .collect(Collectors.toList());
-
-        return new HandPlayer(Priority.HIGH_CARD, sortedCards);
-    }
-    private static List<List<Card>> generateValidCombinations(List<Card> playerCards, List<Card> communityCards) {
-        List<Card> allCards = new ArrayList<>(playerCards);
-        allCards.addAll(communityCards);
-
-        List<List<Card>> combinations = new ArrayList<>();
-        for (int i = 0; i < allCards.size() - 4; i++) {
-            for (int j = i + 1; j < allCards.size() - 3; j++) {
-                for (int k = j + 1; k < allCards.size() - 2; k++) {
-                    for (int l = k + 1; l < allCards.size() - 1; l++) {
-                        for (int m = l + 1; m < allCards.size(); m++) {
-                            List<Card> combination = Arrays.asList(allCards.get(i), allCards.get(j), allCards.get(k), allCards.get(l), allCards.get(m));
-                            if (combination.stream().anyMatch(playerCards::contains)) {
-                                combinations.add(combination);
-                            }
-                        }
-                    }
+            if (evaluatedHand.getCards().size() == 5) { // Проверка, что комбинация состоит из 5 карт
+                if (bestHand == null || evaluatedHand.compareTo(bestHand) > 0) {
+                    bestHand = evaluatedHand;
                 }
             }
         }
-        return combinations;
+
+        if (bestHand == null) {
+            throw new IllegalStateException("No valid hand found");
+        }
+
+        // Диагностический вывод для отладки
+
+        return bestHand;
+    }
+
+    public static List<List<Card>> generateValidCombinations(List<Card> playerCards, List<Card> communityCards) {
+        List<List<Card>> validCombinations = new ArrayList<>();
+
+        List<Card> allCards = new ArrayList<>(communityCards);
+        allCards.addAll(playerCards);
+
+        List<List<Card>> allCombinations = generateSubCombinations(allCards);
+
+        for (List<Card> combination : allCombinations) {
+            boolean containsPlayerCard = combination.stream().anyMatch(playerCards::contains);
+
+            // Условие фильтрации и проверка размера комбинации
+            if (containsPlayerCard && combination.size() == 5) {
+                validCombinations.add(combination);
+            }
+        }
+
+        return validCombinations;
     }
 
 
@@ -87,4 +72,3 @@ public class PokerHandEvaluator {
         return combinations;
     }
 }
-

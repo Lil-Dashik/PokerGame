@@ -77,7 +77,6 @@ public class DealerDeal implements Dealer {
 
         List<Card> playerOneCards = parseCards(board.getPlayerOne());
         List<Card> playerTwoCards = parseCards(board.getPlayerTwo());
-
         List<Card> communityCards = getCommunityCards(board);
 
         HandPlayer playerOneBestHand = PokerHandEvaluator.evaluateBestHand(playerOneCards, communityCards);
@@ -90,7 +89,7 @@ public class DealerDeal implements Dealer {
         return result;
     }
     public PokerResult determineWinner(HandPlayer playerOneHand, HandPlayer playerTwoHand, List<Card> playerOneCards, List<Card> playerTwoCards) {
-        int comparison = compareHands(playerOneHand, playerTwoHand, playerOneCards, playerTwoCards);
+        int comparison = playerOneHand.compareTo(playerTwoHand);
 
         if (comparison > 0) {
             return PokerResult.PLAYER_ONE_WIN;
@@ -198,12 +197,10 @@ public class DealerDeal implements Dealer {
             // Определяем длину текущей карты
             if (i + 2 <= cardsStr.length() && cardsStr.substring(i, i + 2).equals("10")) {
                 String cardStr = cardsStr.substring(i, i + 3); // Берем 3 символа для карты "10"
-
                 cards.add(Card.fromString(cardStr));
                 i += 3; // Переходим к следующей карте
             } else if (i + 2 <= cardsStr.length()) {
                 String cardStr = cardsStr.substring(i, i + 2); // Берем 2 символа для обычной карты
-
                 cards.add(Card.fromString(cardStr));
                 i += 2; // Переходим к следующей карте
             } else {

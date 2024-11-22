@@ -71,7 +71,7 @@ public class CombinationsPokerTest {
         );
 
         PokerResult result = dealer.decideWinner(board);
-        System.out.println("Result: " + result);// Побеждает игрок с старшей кикер-картой AC
+        System.out.println("Result: " + result);// Побеждает игрок со старшей кикер-картой AC
     }
     //Черви (Hearts)
     //Бубны (Diamonds)
@@ -131,11 +131,11 @@ public class CombinationsPokerTest {
     @Test
     public void testFlush() {
         Board board = new Board(
-                "AD3D", // Player One
-                "KDJD", // Player Two
-                "2H6D7D", // Flop
-                "AC", // Turn
-                "QD" // River
+                "ASKS", // Player One
+                "3S7S", // Player Two
+                "3D3H10S", // Flop
+                "AS", // Turn
+                "4S" // River
         );
 
         PokerResult result = dealer.decideWinner(board);
@@ -148,7 +148,7 @@ public class CombinationsPokerTest {
     @Test
     public void testFullHouse() {
         Board board = new Board(
-                "8C9H", // Player One
+                "9C9H", // Player One
                 "6C6S", // Player Two
                 "2C2D2S", // Flop
                 "QS", // Turn

@@ -10,7 +10,6 @@ public class PokerValidator {
             throw new InvalidPokerBoardException("Board is null! Validation cannot proceed.");
         }
 
-        // Собираем все карты из доски
         List<String> allCards = new ArrayList<>();
         if (board.getPlayerOne() != null) {
             allCards.addAll(Arrays.asList(board.getPlayerOne().split(" ")));
@@ -38,7 +37,7 @@ public class PokerValidator {
     public static void printValidationMessageIfNeeded() {
         if (validationPerformed) {
             System.out.println("Board validation passed. All cards are unique.");
-            validationPerformed = false; // Сбрасываем флаг для следующей проверки
+            validationPerformed = false;
         }
     }
 }
