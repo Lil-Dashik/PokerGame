@@ -33,23 +33,11 @@ public class PokerHandEvaluator {
     }
 
     public static List<List<Card>> generateValidCombinations(List<Card> playerCards, List<Card> communityCards) {
-        List<List<Card>> validCombinations = new ArrayList<>();
 
         List<Card> allCards = new ArrayList<>(communityCards);
         allCards.addAll(playerCards);
 
-        List<List<Card>> allCombinations = generateSubCombinations(allCards);
-
-        for (List<Card> combination : allCombinations) {
-            boolean containsPlayerCard = combination.stream().anyMatch(playerCards::contains);
-
-            // Условие фильтрации и проверка размера комбинации
-            if (containsPlayerCard && combination.size() == 5) {
-                validCombinations.add(combination);
-            }
-        }
-
-        return validCombinations;
+        return generateSubCombinations(allCards);
     }
 
 

@@ -230,51 +230,31 @@ public class CombinationsPoker {
     }
 
     private static boolean Straight(List<Card> cards) {
-        List<Card> sortedCards = cards.stream()
-                .distinct()
-                .sorted(Comparator.comparingInt(Card::getRankValue))
-                .toList();
-
-        int consecutiveCount = 1;
-        for (int i = 1; i < sortedCards.size(); i++) {
-            if (sortedCards.get(i).getRankValue() == sortedCards.get(i - 1).getRankValue() + 1) {
-                consecutiveCount++;
-                if (consecutiveCount == 5) {
-                    return true;
-                }
-            } else {
-                consecutiveCount = 1;
-            }
+            // Получаем карты для проверки
+            List<Card> straightCards = getStraightCards(cards);
+            return !straightCards.isEmpty();
         }
-
-        // Проверка на A-2-3-4-5 (low straight)
-        return sortedCards.size() >= 5 &&
-                sortedCards.get(0).getRankValue() == 2 &&
-                sortedCards.get(sortedCards.size() - 1).getRankValue() == 14;
-    }
-
     private static List<Card> getStraightCards(List<Card> cards) {
+        // Удаляем дубликаты по рангу и сортируем
         List<Card> sortedCards = cards.stream()
-                .distinct()
+                .collect(Collectors.toMap(
+                        Card::getRankValue,
+                        card -> card,
+                        (card1, card2) -> card1 // Убираем дубликаты по рангу
+                ))
+                .values()
+                .stream()
                 .sorted(Comparator.comparingInt(Card::getRankValue))
                 .collect(Collectors.toList());
 
+        // Ищем обычный стрит
         List<Card> straight = findStraightSequence(sortedCards);
-        if (straight.size() == 5) {
-            return straight;
+        if (!straight.isEmpty()) {
+            return straight; // Возвращаем найденный стрит
         }
 
-        if (sortedCards.size() >= 5 &&
-                sortedCards.get(0).getRankValue() == 2 &&
-                sortedCards.get(sortedCards.size() - 1).getRankValue() == 14) {
-            return sortedCards.stream()
-                    .filter(card -> card.getRankValue() == 14 || card.getRankValue() <= 5)
-                    .sorted(Comparator.comparingInt(Card::getRankValue))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return Collections.emptyList(); // Если стрит не найден
     }
-
     private static boolean FourOfAKind(List<Card> cards) {
         return cards.stream()
                 .collect(Collectors.groupingBy(Card::getRankValue))
@@ -413,10 +393,10 @@ public class CombinationsPoker {
             previousRank = card.getRankValue();
         }
 
-        // Проверка на низкий стрит (A-2-3-4-5)
-        if (straight.size() == 4 && straight.get(0).getRankValue() == 14 &&
-                sortedCards.get(sortedCards.size() - 1).getRankValue() == 2) {
-            straight.add(sortedCards.get(sortedCards.size() - 1));
+        // Проверка на младший стрит (A-2-3-4-5)
+        if (straight.size() == 4 && straight.get(0).getRankValue() == 2 &&
+                sortedCards.stream().anyMatch(card -> card.getRankValue() == 14)) {
+            straight.add(sortedCards.stream().filter(card -> card.getRankValue() == 14).findFirst().get());
             return straight;
         }
 
