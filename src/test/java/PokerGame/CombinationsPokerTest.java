@@ -246,6 +246,14 @@ public class CombinationsPokerTest {
     }
 
     @Test
+    public void setWithKickerDraw(){
+        Board board = new Board("2C7D", "2DJD", "2H2SQH", "QC", "AS");
+
+        PokerResult result = dealer.decideWinner(board);
+        assertEquals(PokerResult.DRAW, result);
+
+    }
+    @Test
     public void testParseCardsФ() {
         String cardsStr = "AD10H5S7C";
         List<Card> cards = DealerDeal.parseCards(cardsStr);
@@ -520,6 +528,7 @@ public class CombinationsPokerTest {
         // Оба игрока имеют идентичный флеш, поэтому ничья
         assertEquals(PokerResult.DRAW, result, "The result should be a DRAW as both players have the same Flush.");
     }
+
     @Test
     public void testFlushKickerф() {
         Board board = new Board(
@@ -536,6 +545,7 @@ public class CombinationsPokerTest {
         // Player Two Best Combination: AHQHJH9H8H (Flush with Ace, Queen kicker)
         assertEquals(PokerResult.PLAYER_TWO_WIN, result, "Player One should win because of the higher kicker in the flush.");
     }
+
     //Черви (Hearts) красные
     //Бубны (Diamonds) голубые
     //Трефы (Clubs) зелёные
@@ -556,6 +566,7 @@ public class CombinationsPokerTest {
         // Player Two Best Combination: KDQCQSQHKS (Full House, Queens over Kings)
         assertEquals(PokerResult.PLAYER_ONE_WIN, result, "Player One should win because of the stronger Full House.");
     }
+
     @Test
     public void testFourOfAKindKicker() {
         Board board = new Board(
@@ -572,6 +583,7 @@ public class CombinationsPokerTest {
         // Player Two Best Combination: 8C8H8S8D 7C (Four of a Kind with 7 kicker)
         assertEquals(PokerResult.DRAW, result, "Player One should win because of the higher kicker.");
     }
+
     @Test
     public void testStraightFlushKicker() {
         Board board = new Board(
@@ -588,6 +600,7 @@ public class CombinationsPokerTest {
         // Player Two Best Combination: 8H6H5H4H3H
         assertEquals(PokerResult.PLAYER_ONE_WIN, result, "Player One should win because of the higher Straight Flush.");
     }
+
     @Test
     public void testRoyalFlushKicker() {
         Board board = new Board(
@@ -601,5 +614,6 @@ public class CombinationsPokerTest {
         PokerResult result = dealer.decideWinner(board);
         assertEquals(PokerResult.PLAYER_ONE_WIN, result, "Both players have the same Royal Flush; it should be a draw.");
     }
+
 }
 

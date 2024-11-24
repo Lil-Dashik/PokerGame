@@ -1,8 +1,7 @@
 package PokerGame;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DealerDeal implements Dealer {
     private final Deck deck;
@@ -73,8 +72,8 @@ public class DealerDeal implements Dealer {
     public PokerResult decideWinner(Board board) throws InvalidPokerBoardException {
         if (board.getPlayerOne() == null || parseCards(board.getPlayerOne()).size() != 2 ||
                 board.getPlayerTwo() == null || parseCards(board.getPlayerTwo()).size() != 2 ||
-                board.getFlop() == null ||parseCards( board.getFlop()).size() != 3||
-                board.getTurn() == null || parseCards(board.getTurn()).size() != 1|| board.getRiver() == null ||parseCards(board.getRiver()).size() != 1) {
+                board.getFlop() == null || parseCards(board.getFlop()).size() != 3 ||
+                board.getTurn() == null || parseCards(board.getTurn()).size() != 1 || board.getRiver() == null || parseCards(board.getRiver()).size() != 1) {
             throw new InvalidPokerBoardException("Invalid board state: Each player must have exactly 2 cards, and community cards (flop, turn, river) must be fully dealt.");
         }
         PokerValidator.validateBoard(board);
@@ -127,62 +126,41 @@ public class DealerDeal implements Dealer {
                 return rankComparison;
             }
         }
-        if (sortedHand1.equals(sortedHand2)) {
-            return 0; // Ничья
-        }
-
-        // Если комбинации равны, учитываем кикеры
-        List<Card> remainingPlayer1Cards = player1Cards.stream()
-                .filter(card -> !hand1.getCards().contains(card))
-                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
-                .toList();
-        List<Card> remainingPlayer2Cards = player2Cards.stream()
-                .filter(card -> !hand2.getCards().contains(card))
-                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
-                .toList();
-
-        for (int i = 0; i < Math.min(remainingPlayer1Cards.size(), remainingPlayer2Cards.size()); i++) {
-            int kickerComparison = Integer.compare(remainingPlayer1Cards.get(i).getRankValue(), remainingPlayer2Cards.get(i).getRankValue());
-            if (kickerComparison != 0) {
-                return kickerComparison;
-            }
-        }
-
-        // Если все карты равны
+//
+//        if (sortedHand1.equals(sortedHand2)) {
+//            return 0; // Ничья
+//        }
+//        // Убираем карты комбинации из общего списка для кикеров
+//        Set<Integer> combinationRanksPlayer1 = hand1.getCards().stream()
+//                .map(Card::getRankValue)
+//                .collect(Collectors.toSet());
+//        Set<Integer> combinationRanksPlayer2 = hand2.getCards().stream()
+//                .map(Card::getRankValue)
+//                .collect(Collectors.toSet());
+//        System.out.println("combinationRanksPlayer1:"+combinationRanksPlayer1 + " " + "combinationRanksPlayer2:" +combinationRanksPlayer2);
+//        // Если комбинации равны, учитываем кикеры
+//        List<Card> kicker1 = sortedHand1.stream()
+//                .filter(card -> !combinationRanksPlayer1.contains(card.getRankValue()))
+//                .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
+//                .toList();
+//        List<Card> kicker2 = sortedHand2.stream()
+//                .filter(card -> !combinationRanksPlayer2.contains(card.getRankValue()))
+//                .sorted(Comparator.comparingInt(Card::getRankValue).reversed())
+//                .toList();
+//        System.out.println("Kickers for Player 1: " + kicker1);
+//        System.out.println("Kickers for Player 2: " + kicker2);
+//        for (int i = 0; i < Math.min(kicker1.size(), kicker2.size()); i++) {
+//            int kickerComparison = Integer.compare(kicker1.get(i).getRankValue(), kicker2.get(i).getRankValue());
+//            if (kickerComparison != 0) {
+//                return kickerComparison;
+//            }
+//        }
+//        // Если все карты равны
         return 0;
     }
 
     // Метод для сравнения только двух карт игроков
-    private static int comparePlayerCardsOnly(List<Card> player1Cards, List<Card> player2Cards) {
-        // Сортируем только две карты игроков
-        List<Card> sortedPlayer1Cards = player1Cards.stream()
-                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
-                .toList();
-        List<Card> sortedPlayer2Cards = player2Cards.stream()
-                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
-                .toList();
 
-        // Сравниваем первую карту
-        int firstCardComparison = Integer.compare(
-                sortedPlayer1Cards.get(0).getRankValue(),
-                sortedPlayer2Cards.get(0).getRankValue()
-        );
-        if (firstCardComparison != 0) {
-            return firstCardComparison;
-        }
-
-        // Если первые карты равны, сравниваем вторую карту
-        int secondCardComparison = Integer.compare(
-                sortedPlayer1Cards.get(1).getRankValue(),
-                sortedPlayer2Cards.get(1).getRankValue()
-        );
-        if (secondCardComparison != 0) {
-            return secondCardComparison;
-        }
-
-        // Полностью равные карты игроков
-        return 0;
-    }
 
     private void printResult(PokerResult result) {
 
