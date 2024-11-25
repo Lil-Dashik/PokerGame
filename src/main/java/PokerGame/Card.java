@@ -27,7 +27,7 @@ public class Card {
 
     public static Card fromString(String cardStr) {
         if (cardStr == null || cardStr.length() < 2 || cardStr.length() > 3) {
-            throw new IllegalArgumentException("Invalid card format: " + cardStr);
+            throw new InvalidPokerBoardException ("Invalid card format: " + cardStr);
         }
 
         String rankSymbol;

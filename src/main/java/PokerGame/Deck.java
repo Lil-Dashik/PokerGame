@@ -27,7 +27,6 @@ public class Deck {
 
     public Card dealCard() {
         if (cards.isEmpty()) {
-
             throw new IllegalStateException("Deck is empty");
         }
         Card dealtCard = cards.removeLast();

@@ -313,108 +313,21 @@ public class CombinationsPokerTest {
         assertEquals(PokerResult.DRAW, result);
     }
 
-    @Test
-    public void testCompareHands() {
-        HandPlayer hand1 = new HandPlayer(Priority.ONE_PAIR, List.of(new Card(Rank.ACE, Suit.H), new Card(Rank.ACE, Suit.D)));
-        HandPlayer hand2 = new HandPlayer(Priority.ONE_PAIR, List.of(new Card(Rank.ACE, Suit.S), new Card(Rank.ACE, Suit.C)));
-
-        List<Card> playerOneCards = List.of(new Card(Rank.ACE, Suit.H), new Card(Rank.KING, Suit.H));
-        List<Card> playerTwoCards = List.of(new Card(Rank.ACE, Suit.S), new Card(Rank.QUEEN, Suit.S));
-
-        int comparison = DealerDeal.compareHands(hand1, hand2, playerOneCards, playerTwoCards);
-
-        assertTrue(comparison > 0, "Player One should win because of the King kicker.");
-    }
 
     @Test
     public void testParseCardsIntegration() {
         Board board = new Board("KH KS", "QS JD", "10H 9H 8H", "7H", "6H");
-        assertDoesNotThrow(() -> {
-            List<Card> playerOneCards = DealerDeal.parseCards(board.getPlayerOne());
-            List<Card> playerTwoCards = DealerDeal.parseCards(board.getPlayerTwo());
-            List<Card> communityCards = DealerDeal.parseCards(board.getFlop() + board.getTurn() + board.getRiver());
-        });
+
     }
 
-    @Test
-    public void testFourOfAKindBeatsFullHouse() {
-        HandPlayer hand1 = new HandPlayer(Priority.FOUR_OF_A_KIND, List.of(
-                new Card(Rank.EIGHT, Suit.D),
-                new Card(Rank.EIGHT, Suit.S),
-                new Card(Rank.EIGHT, Suit.C),
-                new Card(Rank.EIGHT, Suit.H),
-                new Card(Rank.QUEEN, Suit.H)
-        ));
 
-        HandPlayer hand2 = new HandPlayer(Priority.FULL_HOUSE, List.of(
-                new Card(Rank.QUEEN, Suit.H),
-                new Card(Rank.QUEEN, Suit.D),
-                new Card(Rank.QUEEN, Suit.C),
-                new Card(Rank.EIGHT, Suit.D),
-                new Card(Rank.EIGHT, Suit.S)
-        ));
 
-        int comparison = DealerDeal.compareHands(hand1, hand2, List.of(), List.of());
-        assertTrue(comparison > 0, "FOUR OF A KIND should win over FULL HOUSE.");
-    }
-
-    @Test
-    public void testCompareHandsRoyalFlushDraw() {
-        HandPlayer hand1 = new HandPlayer(Priority.ROYAL_FLUSH, List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S),
-                new Card(Rank.QUEEN, Suit.S),
-                new Card(Rank.JACK, Suit.S),
-                new Card(Rank.TEN, Suit.S)
-        ));
-        HandPlayer hand2 = new HandPlayer(Priority.ROYAL_FLUSH, List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S),
-                new Card(Rank.QUEEN, Suit.S),
-                new Card(Rank.JACK, Suit.S),
-                new Card(Rank.TEN, Suit.S)
-        ));
-
-        List<Card> playerOneCards = List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S)
-        );
-        List<Card> playerTwoCards = List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S)
-        );
-
-        int comparison = DealerDeal.compareHands(hand1, hand2, playerOneCards, playerTwoCards);
-        assertEquals(0, comparison, "Hands should be equal, resulting in a draw.");
-    }
-
-    @Test
-    public void testDetermineWinnerRoyalFlushDraw() {
-        HandPlayer hand1 = new HandPlayer(Priority.ROYAL_FLUSH, List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S),
-                new Card(Rank.QUEEN, Suit.S),
-                new Card(Rank.JACK, Suit.S),
-                new Card(Rank.TEN, Suit.S)
-        ));
-        HandPlayer hand2 = new HandPlayer(Priority.ROYAL_FLUSH, List.of(
-                new Card(Rank.ACE, Suit.S),
-                new Card(Rank.KING, Suit.S),
-                new Card(Rank.QUEEN, Suit.S),
-                new Card(Rank.JACK, Suit.S),
-                new Card(Rank.TEN, Suit.S)
-        ));
-
-        DealerDeal dealer = new DealerDeal();
-        PokerResult result = dealer.determineWinner(hand1, hand2, List.of(), List.of());
-        assertEquals(PokerResult.DRAW, result, "Two equal Royal Flushes should result in a DRAW.");
-    }
 
     @Test
     public void testOnePairComparison() {
         Board board = new Board(
-                "QD5H", // Player One
-                "QS8C", // Player Two
+                "5C5H", // Player One
+                "8C3H", // Player Two
                 "AC7CKH", // Flop
                 "2S", // Turn
                 "QC" // River

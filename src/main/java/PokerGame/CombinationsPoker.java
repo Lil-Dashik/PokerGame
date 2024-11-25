@@ -53,20 +53,20 @@ public class CombinationsPoker {
 
     private static void validateCards(List<Card> cards) {
         if (cards == null || cards.isEmpty()) {
-            throw new IllegalArgumentException("Card list cannot be null or empty.");
+            throw new InvalidPokerBoardException("Card list cannot be null or empty.");
         }
 
         Set<Card> uniqueCards = new HashSet<>(cards);
         if (uniqueCards.size() != cards.size()) {
-            throw new IllegalArgumentException("Duplicate cards detected in the list: " + cards);
+            throw new InvalidPokerBoardException("Duplicate cards detected in the list: " + cards);
         }
 
         for (Card card : cards) {
             if (card == null) {
-                throw new IllegalArgumentException("Null card detected in the list.");
+                throw new InvalidPokerBoardException("Null card detected in the list.");
             }
             if (card.getRankValue() < 2 || card.getRankValue() > 14) {
-                throw new IllegalArgumentException("Invalid card rank: " + card);
+                throw new InvalidPokerBoardException ("Invalid card rank: " + card);
             }
         }
     }
@@ -230,10 +230,11 @@ public class CombinationsPoker {
     }
 
     private static boolean Straight(List<Card> cards) {
-            // Получаем карты для проверки
-            List<Card> straightCards = getStraightCards(cards);
-            return !straightCards.isEmpty();
-        }
+        // Получаем карты для проверки
+        List<Card> straightCards = getStraightCards(cards);
+        return !straightCards.isEmpty();
+    }
+
     private static List<Card> getStraightCards(List<Card> cards) {
         // Удаляем дубликаты по рангу и сортируем
         List<Card> sortedCards = cards.stream()
@@ -255,6 +256,7 @@ public class CombinationsPoker {
 
         return Collections.emptyList(); // Если стрит не найден
     }
+
     private static boolean FourOfAKind(List<Card> cards) {
         return cards.stream()
                 .collect(Collectors.groupingBy(Card::getRankValue))

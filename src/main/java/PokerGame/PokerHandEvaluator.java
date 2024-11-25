@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 public class PokerHandEvaluator {
     public static HandPlayer evaluateBestHand(List<Card> playerCards, List<Card> communityCards) {
 
-
         // Генерация всех валидных комбинаций (включающих хотя бы одну карту игрока)
         List<List<Card>> validCombinations = generateValidCombinations(playerCards, communityCards);
 
@@ -24,11 +23,8 @@ public class PokerHandEvaluator {
         }
 
         if (bestHand == null) {
-            throw new IllegalStateException("No valid hand found");
+            throw new InvalidPokerBoardException("No valid hand found");
         }
-
-        // Диагностический вывод для отладки
-
         return bestHand;
     }
 

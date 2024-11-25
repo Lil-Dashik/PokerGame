@@ -18,6 +18,30 @@ public class HandPlayer implements Comparable<HandPlayer> {
         return cards;
     }
 
+    public static int compareHands(HandPlayer hand1, HandPlayer hand2) {
+        // Сравнение приоритетов комбинаций
+        int priorityComparison = Integer.compare(hand1.getPriority().getPriority(), hand2.getPriority().getPriority());
+        if (priorityComparison != 0) {
+            return priorityComparison; // Возвращаем разницу приоритетов
+        }
+
+        // Сортируем карты комбинаций по убыванию ранга
+        List<Card> sortedHand1 = hand1.getCards().stream()
+                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
+                .toList();
+        List<Card> sortedHand2 = hand2.getCards().stream()
+                .sorted((a, b) -> Integer.compare(b.getRankValue(), a.getRankValue()))
+                .toList();
+
+        // Сравниваем карты комбинации
+        for (int i = 0; i < Math.min(sortedHand1.size(), sortedHand2.size()); i++) {
+            int rankComparison = Integer.compare(sortedHand1.get(i).getRankValue(), sortedHand2.get(i).getRankValue());
+            if (rankComparison != 0) {
+                return rankComparison;
+            }
+        }
+        return 0;
+    }
     @Override
     public int compareTo(HandPlayer other) {
         int priorityComparison = Integer.compare(this.priority.getPriority(), other.priority.getPriority());
