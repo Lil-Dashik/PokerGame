@@ -10,7 +10,7 @@ public class CombinationsPoker {
     private static final Map<String, HandPlayer> combinationCache = new ConcurrentHashMap<>();
 
     public static HandPlayer evaluateCombination(List<Card> cards) {
-        validateCards(cards);
+        PokerValidator.validateCards(cards);
         String key = generateCacheKey(cards);
         if (combinationCache.containsKey(key)) {
             return combinationCache.get(key);
@@ -51,25 +51,6 @@ public class CombinationsPoker {
         return bestCombination;
     }
 
-    private static void validateCards(List<Card> cards) {
-        if (cards == null || cards.isEmpty()) {
-            throw new InvalidPokerBoardException("Card list cannot be null or empty.");
-        }
-
-        Set<Card> uniqueCards = new HashSet<>(cards);
-        if (uniqueCards.size() != cards.size()) {
-            throw new InvalidPokerBoardException("Duplicate cards detected in the list: " + cards);
-        }
-
-        for (Card card : cards) {
-            if (card == null) {
-                throw new InvalidPokerBoardException("Null card detected in the list.");
-            }
-            if (card.getRankValue() < 2 || card.getRankValue() > 14) {
-                throw new InvalidPokerBoardException ("Invalid card rank: " + card);
-            }
-        }
-    }
 
     private static String generateCacheKey(List<Card> cards) {
         return cards.stream()

@@ -59,8 +59,8 @@ public class DealerDeal implements Dealer {
     public PokerResult decideWinner(Board board) throws InvalidPokerBoardException {
         PokerValidator.validateBoard(board, Stage.RIVER);
 
-        List<Card> playerOneCards = parseCards(board.getPlayerOne());
-        List<Card> playerTwoCards = parseCards(board.getPlayerTwo());
+        List<Card> playerOneCards = Card.parseCards(board.getPlayerOne());
+        List<Card> playerTwoCards = Card.parseCards(board.getPlayerTwo());
         List<Card> communityCards = getCommunityCards(board);
 
         HandPlayer playerOneBestHand = PokerHandEvaluator.evaluateBestHand(playerOneCards, communityCards);
@@ -128,44 +128,11 @@ public class DealerDeal implements Dealer {
     }
 
     private List<Card> getCommunityCards(Board board) {
-        List<Card> communityCards = parseCards(board.getFlop());
-        communityCards.addAll(parseCards(board.getTurn()));
-        communityCards.addAll(parseCards(board.getRiver()));
+        List<Card> communityCards = Card.parseCards(board.getFlop());
+        communityCards.addAll(Card.parseCards(board.getTurn()));
+        communityCards.addAll(Card.parseCards(board.getRiver()));
         return communityCards;
     }
 
-    public static List<Card> parseCards(String cardsStr) {
-        if (cardsStr == null || cardsStr.isBlank()) {
-            throw new IllegalArgumentException("Input string for cards cannot be null or empty.");
-        }
-        // Удаляем лишние пробелы между картами
-        cardsStr = cardsStr.trim().replaceAll("\\s+", "");
-
-        List<Card> cards = new ArrayList<>();
-        int i = 0;
-
-        while (i < cardsStr.length()) {
-            // Определяем длину текущей карты
-            String cardStr;
-            if (i + 2 <= cardsStr.length() && cardsStr.substring(i, i + 2).equals("10")) {
-                cardStr = cardsStr.substring(i, i + 3); // Берем 3 символа для карты "10"
-                i += 3;
-            } else if (i + 1 <= cardsStr.length()) {
-                cardStr = cardsStr.substring(i, i + 2); // Берем 2 символа для обычной карты
-                i += 2;
-            } else {
-                throw new IllegalArgumentException("Invalid card format in string: " + cardsStr);
-            }
-            if (cardStr.isEmpty()) {
-                throw new IllegalArgumentException("Encountered empty card while parsing: " + cardsStr);
-            }
-            //if (!cardStr.matches("^[2-9TJQKA][CDHS]$|^10[CDHS]$")) {
-            //throw new IllegalArgumentException("Invalid card format: " + cardStr);
-            //}
-            cards.add(Card.fromString(cardStr));
-        }
-
-        return cards;
-    }
 }
 

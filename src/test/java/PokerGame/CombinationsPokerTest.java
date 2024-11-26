@@ -232,7 +232,7 @@ public class CombinationsPokerTest {
     @Test
     public void testParseCards() {
         String cardsStr = "KH KS QH JD 10C";
-        List<Card> cards = DealerDeal.parseCards(cardsStr);
+        List<Card> cards = Card.parseCards(cardsStr);
 
         List<Card> expectedCards = Arrays.asList(
                 new Card(Rank.KING, Suit.H),
@@ -256,7 +256,7 @@ public class CombinationsPokerTest {
     @Test
     public void testParseCardsФ() {
         String cardsStr = "AD10H5S7C";
-        List<Card> cards = DealerDeal.parseCards(cardsStr);
+        List<Card> cards = Card.parseCards(cardsStr);
 
         assertEquals(4, cards.size());
         assertEquals(new Card(Rank.ACE, Suit.D), cards.get(0));
@@ -268,7 +268,7 @@ public class CombinationsPokerTest {
     @Test
     public void testCardStringWithSpaces() {
         String cardsStr = "10H JD KH QH";
-        List<Card> cards = DealerDeal.parseCards(cardsStr.replace(" ", ""));
+        List<Card> cards = Card.parseCards(cardsStr.replace(" ", ""));
 
         assertEquals(4, cards.size());
     }
@@ -276,7 +276,7 @@ public class CombinationsPokerTest {
     @Test
     public void testParseCardsWithSpaces() {
         String cardsStr = " 10H  JD KH QH ";
-        List<Card> cards = DealerDeal.parseCards(cardsStr.trim().replaceAll(" +", ""));
+        List<Card> cards = Card.parseCards(cardsStr.trim().replaceAll(" +", ""));
 
         assertEquals(4, cards.size());
         assertEquals(new Card(Rank.TEN, Suit.H), cards.get(0));
@@ -289,13 +289,13 @@ public class CombinationsPokerTest {
     @Test
     public void testEmptyCardString() {
         String cardsStr = "";
-        assertThrows(IllegalArgumentException.class, () -> DealerDeal.parseCards(cardsStr));
+        assertThrows(IllegalArgumentException.class, () -> Card.parseCards(cardsStr));
     }
 
     @Test
     public void testParseCardsWithExtraSpaces() {
         String cardsStr = " KH   KS  QH JD   10C  ";
-        List<Card> cards = DealerDeal.parseCards(cardsStr);
+        List<Card> cards = Card.parseCards(cardsStr);
 
         assertEquals(5, cards.size());
         assertEquals(new Card(Rank.KING, Suit.H), cards.get(0));
